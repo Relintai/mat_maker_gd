@@ -19,18 +19,23 @@ export(bool) var refresh setget reff,reffg
 var p_o28405_repeat : float = 1.000000000;
 var p_o28405_rotate : float = 0.000000000;
 
-
-var p_o28405_gradient_0_pos  : float= 0.000000000;
-var p_o28405_gradient_0_r : float = 0.000000000;
-var p_o28405_gradient_0_g : float = 0.000000000;
-var p_o28405_gradient_0_b : float = 0.000000000;
-var p_o28405_gradient_0_a  : float= 1.000000000;
-
-var p_o28405_gradient_1_pos : float = 1.000000000;
-var p_o28405_gradient_1_r : float = 1.000000000;
-var p_o28405_gradient_1_g : float = 1.000000000;
-var p_o28405_gradient_1_b : float = 1.000000000;
-var p_o28405_gradient_1_a : float = 1.000000000;
+var p_o71406_repeat = 1.000000000;
+var p_o71406_rotate = 0.000000000;
+var p_o71406_gradient_0_pos = 0.000000000;
+var p_o71406_gradient_0_r = 0.000000000;
+var p_o71406_gradient_0_g = 0.000000000;
+var p_o71406_gradient_0_b = 0.000000000;
+var p_o71406_gradient_0_a = 1.000000000;
+var p_o71406_gradient_1_pos = 0.509090909;
+var p_o71406_gradient_1_r = 0.843750000;
+var p_o71406_gradient_1_g = 0.003295898;
+var p_o71406_gradient_1_b = 0.003295898;
+var p_o71406_gradient_1_a = 1.000000000;
+var p_o71406_gradient_2_pos = 1.000000000;
+var p_o71406_gradient_2_r = 1.000000000;
+var p_o71406_gradient_2_g = 1.000000000;
+var p_o71406_gradient_2_b = 1.000000000;
+var p_o71406_gradient_2_a = 1.000000000;
 
 
 func gen() -> void:
@@ -54,9 +59,18 @@ func gen() -> void:
 	for x in range(image.get_width()):
 		for y in range(image.get_height()):
 			var v : Vector2 = Vector2(x / w, y / h)
+			
+#			var rr : float = 0.5+(cos(p_o71406_rotate*0.01745329251)*(v.x-0.5)+sin(p_o71406_rotate*0.01745329251)*(v.y-0.5))/(cos(abs(modf(p_o71406_rotate, 90.0)-45.0)*0.01745329251)*1.41421356237);
+#			var col : Color = gradient_type_1(fractf(rr * p_o71406_repeat));
 
-			var o28405_0_r : float = 0.5 + (cos(p_o28405_rotate*0.01745329251)*(v.x-0.5)+sin(p_o28405_rotate*0.01745329251)*(v.y-0.5))/(cos(abs(modf(p_o28405_rotate, 90.0)-45.0)*0.01745329251)*1.41421356237)
-			var col : Color = o28405_gradient_gradient_fct(fractf(o28405_0_r*p_o28405_repeat))
+#			var rr : float = 0.5 + (cos(p_o28405_rotate*0.01745329251)*(v.x-0.5)+sin(p_o28405_rotate*0.01745329251)*(v.y-0.5))/(cos(abs(modf(p_o28405_rotate, 90.0)-45.0)*0.01745329251)*1.41421356237)
+#			var col : Color = gradient_type_2(fractf(rr * p_o71406_repeat))
+			
+#			var rr : float = 0.5+(cos(p_o71406_rotate*0.01745329251)*(v.x-0.5)+sin(p_o71406_rotate*0.01745329251)*(v.y-0.5))/(cos(abs(modf(p_o71406_rotate, 90.0)-45.0)*0.01745329251)*1.41421356237);
+#			var col : Color = gradient_type_3(fractf(rr * p_o71406_repeat))
+			
+			var rr : float = 0.5+(cos(p_o71406_rotate*0.01745329251)*(v.x-0.5)+sin(p_o71406_rotate*0.01745329251)*(v.y-0.5))/(cos(abs(modf(p_o71406_rotate, 90.0)-45.0)*0.01745329251)*1.41421356237);
+			var col : Color = gradient_type_4(fractf(rr * p_o71406_repeat));
 
 			image.set_pixel(x, y, col)
 
@@ -65,26 +79,44 @@ func gen() -> void:
 	tex.create_from_image(image)
 	texture = tex
 
-func o28405_gradient_gradient_fct(x : float) -> Color:
-	if (x < p_o28405_gradient_0_pos):
-		return Color(p_o28405_gradient_0_r,p_o28405_gradient_0_g,p_o28405_gradient_0_b,p_o28405_gradient_0_a);
-	elif (x < p_o28405_gradient_1_pos):
-		return lerp(Color(p_o28405_gradient_0_r,p_o28405_gradient_0_g,p_o28405_gradient_0_b,p_o28405_gradient_0_a), Color(p_o28405_gradient_1_r,p_o28405_gradient_1_g,p_o28405_gradient_1_b,p_o28405_gradient_1_a), ((x-p_o28405_gradient_0_pos)/(p_o28405_gradient_1_pos-p_o28405_gradient_0_pos)));
-		
-	return Color(p_o28405_gradient_1_r,p_o28405_gradient_1_g,p_o28405_gradient_1_b,p_o28405_gradient_1_a);
+func gradient_type_1(x : float) -> Color:
+	if (x < 0.5*(p_o71406_gradient_0_pos+p_o71406_gradient_1_pos)):
+		return Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a);
+	elif (x < 0.5*(p_o71406_gradient_1_pos+p_o71406_gradient_2_pos)):
+		return Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a);
 
-#vec4 o5449_gradient_gradient_fct(float x) {
-#  if (x < p_o5449_gradient_0_pos) {
-#	return vec4(p_o5449_gradient_0_r,p_o5449_gradient_0_g,p_o5449_gradient_0_b,p_o5449_gradient_0_a);
-#  } else if (x < p_o5449_gradient_1_pos) {
-#	return mix(vec4(p_o5449_gradient_0_r,p_o5449_gradient_0_g,p_o5449_gradient_0_b,p_o5449_gradient_0_a), vec4(p_o5449_gradient_1_r,p_o5449_gradient_1_g,p_o5449_gradient_1_b,p_o5449_gradient_1_a), ((x-p_o5449_gradient_0_pos)/(p_o5449_gradient_1_pos-p_o5449_gradient_0_pos)));
-#  } else if (x < p_o5449_gradient_2_pos) {
-#	return mix(vec4(p_o5449_gradient_1_r,p_o5449_gradient_1_g,p_o5449_gradient_1_b,p_o5449_gradient_1_a), vec4(p_o5449_gradient_2_r,p_o5449_gradient_2_g,p_o5449_gradient_2_b,p_o5449_gradient_2_a), ((x-p_o5449_gradient_1_pos)/(p_o5449_gradient_2_pos-p_o5449_gradient_1_pos)));
-#  } else if (x < p_o5449_gradient_3_pos) {
-#	return mix(vec4(p_o5449_gradient_2_r,p_o5449_gradient_2_g,p_o5449_gradient_2_b,p_o5449_gradient_2_a), vec4(p_o5449_gradient_3_r,p_o5449_gradient_3_g,p_o5449_gradient_3_b,p_o5449_gradient_3_a), ((x-p_o5449_gradient_2_pos)/(p_o5449_gradient_3_pos-p_o5449_gradient_2_pos)));
-#  }
-#  return vec4(p_o5449_gradient_3_r,p_o5449_gradient_3_g,p_o5449_gradient_3_b,p_o5449_gradient_3_a);
-#}
+	return Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a);
+
+func gradient_type_2(x : float) -> Color:
+	if (x < p_o71406_gradient_0_pos):
+		return Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a);
+	elif (x < p_o71406_gradient_1_pos):
+		return lerp(Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a), Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), ((x-p_o71406_gradient_0_pos)/(p_o71406_gradient_1_pos-p_o71406_gradient_0_pos)));
+	elif (x < p_o71406_gradient_2_pos):
+		return lerp(Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a), ((x-p_o71406_gradient_1_pos)/(p_o71406_gradient_2_pos-p_o71406_gradient_1_pos)));
+  
+	return Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a);
+
+func gradient_type_3(x : float) -> Color:
+	if (x < p_o71406_gradient_0_pos):
+		return Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a);
+	elif (x < p_o71406_gradient_1_pos):
+		return lerp(Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a), Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), 0.5-0.5*cos(3.14159265359*(x-p_o71406_gradient_0_pos)/(p_o71406_gradient_1_pos-p_o71406_gradient_0_pos)));
+	elif (x < p_o71406_gradient_2_pos):
+		return lerp(Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a), 0.5-0.5*cos(3.14159265359*(x-p_o71406_gradient_1_pos)/(p_o71406_gradient_2_pos-p_o71406_gradient_1_pos)));
+
+	return Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a);
+
+
+func gradient_type_4(x : float) -> Color:
+	if (x < p_o71406_gradient_0_pos):
+		return Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a);
+	elif (x < p_o71406_gradient_1_pos):
+		return lerp(lerp(Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a), (x-p_o71406_gradient_1_pos)/(p_o71406_gradient_2_pos-p_o71406_gradient_1_pos)), lerp(Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a), Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), (x-p_o71406_gradient_0_pos)/(p_o71406_gradient_1_pos-p_o71406_gradient_0_pos)), 1.0-0.5*(x-p_o71406_gradient_0_pos)/(p_o71406_gradient_1_pos-p_o71406_gradient_0_pos));
+	elif (x < p_o71406_gradient_2_pos):
+		return lerp(lerp(Color(p_o71406_gradient_0_r,p_o71406_gradient_0_g,p_o71406_gradient_0_b,p_o71406_gradient_0_a), Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), (x-p_o71406_gradient_0_pos)/(p_o71406_gradient_1_pos-p_o71406_gradient_0_pos)), lerp(Color(p_o71406_gradient_1_r,p_o71406_gradient_1_g,p_o71406_gradient_1_b,p_o71406_gradient_1_a), Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a), (x-p_o71406_gradient_1_pos)/(p_o71406_gradient_2_pos-p_o71406_gradient_1_pos)), 0.5+0.5*(x-p_o71406_gradient_1_pos)/(p_o71406_gradient_2_pos-p_o71406_gradient_1_pos));
+  
+	return Color(p_o71406_gradient_2_r,p_o71406_gradient_2_g,p_o71406_gradient_2_b,p_o71406_gradient_2_a);
 
 func modf(x : float, y : float) -> float:
 	return x - y * floor(x / y)
