@@ -68,8 +68,23 @@ func gen() -> void:
 #			var cc : Color = Color(vb.x, vb.y, vb.z, 1)
 #			image.set_pixel(x, y, cc)
 			
+			#Running Bond
+#			var brect : Color = bricks_rb(v, Vector2(p_o39644_columns, p_o39644_rows), p_o39644_repeat, p_o39644_row_offset);
+			
+			#RunningBond2
+#			var brect : Color = bricks_rb2(v, Vector2(p_o39644_columns, p_o39644_rows), p_o39644_repeat, p_o39644_row_offset);
+			
+			#HerringBone
+#			var brect : Color = bricks_hb(v, Vector2(p_o39644_columns, p_o39644_rows), p_o39644_repeat, p_o39644_row_offset);
+			
+			#BasketWeave
+#			var brect : Color = bricks_bw(v, Vector2(p_o39644_columns, p_o39644_rows), p_o39644_repeat, p_o39644_row_offset);
+			
+			#SpanishBond
+			var brect : Color = bricks_sb(v, Vector2(p_o39644_columns, p_o39644_rows), p_o39644_repeat, p_o39644_row_offset);
+			
+			
 			# 1, 2
-			var brect : Color = bricks_rb(v, Vector2(p_o39644_columns, p_o39644_rows), p_o39644_repeat, p_o39644_row_offset);
 			var fcolor : Color = brick(v, Vector2(brect.r, brect.g),  Vector2(brect.b, brect.a), p_o39644_mortar*1.0, p_o39644_round*1.0, max(0.001, p_o39644_bevel*1.0));
 			
 #			image.set_pixel(x, y, brect)
@@ -101,6 +116,7 @@ func gen() -> void:
 #			var f : float = 0.5*(sign(brect.b-brect.r-brect.a+brect.g)+1.0);
 #			image.set_pixel(x, y, Color(f, f, f, 1))
 
+			
 			
 	image.unlock()
 	
@@ -178,6 +194,106 @@ func bricks_rb(uv : Vector2, count : Vector2, repeat : float, offset : float) ->
 	var bmc : Vector2 = bmin + Vector2(1.0, 1.0) /  count
 
 	return Color(bmin.x, bmin.y, bmc.x, bmc.y)
+	
+func bricks_rb2(uv : Vector2, count : Vector2, repeat : float, offset : float) -> Color:
+	count *= repeat
+
+	var x_offset : float = offset * step(0.5, fractf(uv.y * count.y * 0.5))
+	count.x = count.x * (1.0+step(0.5, fractf(uv.y * count.y * 0.5)))
+	var bmin : Vector2 = Vector2()
+	
+	bmin.x = floor(uv.x * count.x - x_offset)
+	bmin.y = floor(uv.y * count.y)
+
+	bmin.x += x_offset
+	bmin /= count
+	
+	var b : Vector2 = bmin + Vector2(1, 1) / count
+	
+	return Color(bmin.x, bmin.y, b.x, b.y)
+	
+func bricks_hb(uv : Vector2, count : Vector2, repeat : float, offset : float) -> Color:
+	var pc : float = count.x + count.y
+	var c : float = pc * repeat
+	
+	var corner : Vector2 = Vector2(floor(uv.x * c), floor(uv.y * c))
+	var cdiff : float = modf(corner.x - corner.y, pc)
+
+	if (cdiff < count.x):
+		var col : Color = Color()
+		
+		col.r = (corner.x - cdiff) / c
+		col.g = corner.y / c
+		
+		col.b = (corner.x - cdiff + count.x) / c
+		col.a = (corner.y + 1.0) / c
+		
+		return col
+	else:
+		var col : Color = Color()
+		
+		col.r = corner.x / c
+		col.g = (corner.y - (pc - cdiff - 1.0)) / c
+		
+		col.b = (corner.x + 1.0) / c
+		col.a = (corner.y - (pc - cdiff - 1.0) + count.y) / c
+		
+		return col
+		
+func bricks_bw(uv : Vector2, count : Vector2, repeat : float, offset : float) -> Color:
+	var c : Vector2 = 2.0 * count * repeat
+	var mc : float = max(c.x, c.y)
+	var corner1 : Vector2 = Vector2(floor(uv.x * c.x), floor(uv.y * c.y))
+	var corner2 : Vector2 = Vector2(count.x * floor(repeat* 2.0 * uv.x), count.y * floor(repeat * 2.0 * uv.y))
+	
+	var tmp : Vector2 = Vector2(floor(repeat * 2.0 * uv.x), floor(repeat * 2.0 * uv.y))
+	var cdiff : float = modf(tmp.dot(Vector2(1, 1)), 2.0)
+	
+	var corner : Vector2
+	var size : Vector2
+
+	if cdiff == 0:
+		corner = Vector2(corner1.x, corner2.y)
+		size = Vector2(1.0, count.y)
+	else:
+		corner = Vector2(corner2.x, corner1.y)
+		size = Vector2(count.x, 1.0)
+
+	return Color(corner.x / c.x, corner.y / c.y, (corner.x + size.x) / c.x, (corner.y + size.y) / c.y)
+
+func bricks_sb(uv : Vector2, count : Vector2, repeat : float, offset : float) -> Color:
+	var c : Vector2 = (count + Vector2(1, 1)) * repeat
+	var mc : float = max(c.x, c.y)
+	var corner1 : Vector2 = Vector2(floor(uv.x * c.x), floor(uv.y * c.y))
+	var corner2 : Vector2 = (count + Vector2(1, 1)) * Vector2(floor(repeat * uv.x), floor(repeat * uv.y))
+	var rcorner : Vector2 = corner1 - corner2
+
+	var corner : Vector2
+	var size : Vector2
+
+	if (rcorner.x == 0.0 && rcorner.y < count.y):
+		corner = corner2
+		size = Vector2(1.0, count.y)
+	elif (rcorner.y == 0.0):
+		corner = corner2 + Vector2(1.0, 0.0)
+		size = Vector2(count.x, 1.0)
+	elif (rcorner.x == count.x):
+		corner = corner2 + Vector2(count.x, 1.0)
+		size = Vector2(1.0, count.y)
+	elif (rcorner.y == count.y):
+		corner = corner2 + Vector2(0.0, count.y)
+		size = Vector2(count.x, 1.0)
+	else:
+		corner = corner2 + Vector2(1, 1)
+		size = Vector2(count.x-1.0, count.y-1.0)
+
+	return Color(corner.x / c.x, corner.y / c.y, (corner.x + size.x) / c.x, (corner.y + size.y) / c.y)
+
+		
+#from https://www.geeksforgeeks.org/modulus-two-float-double-numbers/
+#there is probably a better way of doing this
+func modf(x : float, y : float) -> float:
+	return x - y * floor(x / y)
 
 func fract(v : Vector2) -> Vector2:
 	v.x = v.x - floor(v.x)
