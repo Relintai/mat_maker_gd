@@ -4,10 +4,40 @@ extends TextureRect
 var image : Image
 var tex : ImageTexture
 
+export(Vector2) var bmin : Vector2 = Vector2(0.1, 0.1)
+export(Vector2) var bmax : Vector2 = Vector2(1, 1)
+
 export(bool) var refresh setget reff,reffg
 
 func _ready():
 	pass
+	
+	
+#float o39644_0_2_f : float = o39644_0.x
+var seed_o39644 : int = 15005
+var p_o39644_repeat : float = 1.000000000
+var p_o39644_rows : float = 6.000000000
+var p_o39644_columns : float = 3.000000000
+var p_o39644_row_offset : float = 0.500000000
+var p_o39644_mortar: float = 0.100000000
+var p_o39644_bevel : float = 0.100000000
+var p_o39644_round : float= 0.000000000
+var p_o39644_corner : float = 0.420000000
+
+
+var p_o3335_albedo_color_r : float = 1.000000000
+var p_o3335_albedo_color_g : float = 1.000000000
+var p_o3335_albedo_color_b : float = 1.000000000
+var p_o3335_albedo_color_a : float = 1.000000000
+var p_o3335_metallic : float = 1.000000000
+var p_o3335_roughness : float = 1.000000000
+var p_o3335_emission_energy : float = 1.000000000
+var p_o3335_normal : float = 1.000000000
+var p_o3335_ao : float = 1.000000000
+var p_o3335_depth_scale : float = 0.500000000
+var p_o3335_sss : float = 0.000000000
+
+
 
 func gen() -> void:
 	if !image:
@@ -17,8 +47,8 @@ func gen() -> void:
 	if !tex:
 		tex = ImageTexture.new()
 		
-	var bmin : Vector2 = Vector2(0.3, 0.3)
-	var bmax : Vector2 = Vector2(1, 1)
+#	var bmin : Vector2 = Vector2(0.1, 0.1)
+#	var bmax : Vector2 = Vector2(1, 1)
 
 	image.lock()
 	
@@ -31,30 +61,70 @@ func gen() -> void:
 		for y in range(image.get_height()):
 			var v : Vector2 = Vector2(x / w, y / h)
 
-			var vb : Vector3 = brick_uv(v, bmin, bmax, pseed)
-#			var col : Color = Color(vb.x, vb.y, vb.z, 1)
+#			var vb : Vector3 = brick_uv(v, bmin, bmax, pseed)
+##			var col : Color = Color(vb.x, vb.y, vb.z, 1)
+#
+#			var col : Color = brick(v, bmin, bmax, 0.2, 0.2, 0.2)
+#			var cc : Color = Color(vb.x, vb.y, vb.z, 1)
+#			image.set_pixel(x, y, cc)
 			
-			var col : Color = brick(v, bmin, bmax, 0.2, 0.2, 0.2)
+			# 1, 2
+			var brect : Color = bricks_rb(v, Vector2(p_o39644_columns, p_o39644_rows), p_o39644_repeat, p_o39644_row_offset);
+			var fcolor : Color = brick(v, Vector2(brect.r, brect.g),  Vector2(brect.b, brect.a), p_o39644_mortar*1.0, p_o39644_round*1.0, max(0.001, p_o39644_bevel*1.0));
 			
-			image.set_pixel(x, y, col)
+#			image.set_pixel(x, y, brect)
+#			image.set_pixel(x, y, fcolor)
+#			image.set_pixel(x, y, Color(fcolor.r, fcolor.g, fcolor.b, 1))
+
+			#1
+			var rr : float = fcolor.r;
+			image.set_pixel(x, y, Color(rr,rr, rr, 1))
+#
+#			# 3
+#			var yy : float = fcolor.g;
+#			image.set_pixel(x, y, Color(yy,yy, yy, 1))
+#
+#			# 4
+#			var zz : float = fcolor.b;
+#			image.set_pixel(x, y, Color(zz,zz, zz, 1))
 			
-#vec4 $(name_uv)_rect = bricks_$pattern($uv, vec2($columns, $rows), $repeat, $row_offset);
-#vec4 $(name_uv) = brick($uv, $(name_uv)_rect.xy, $(name_uv)_rect.zw, $mortar*$mortar_map($uv), $round*$round_map($uv), max(0.001, $bevel*$bevel_map($uv)));
-	
+			# 5
+#			var c : Vector3 = brick_uv(v, Vector2(brect.r, brect.g),  Vector2(brect.b, brect.a), float(seed_o39644))
+#			image.set_pixel(x, y, Color(c.x, c.y, c.z, 1))
+
+			# 6
+#			var c : Vector3 = brick_corner_uv(v, Vector2(brect.r, brect.g),  Vector2(brect.b, brect.a), p_o39644_mortar*1.0, p_o39644_corner, float(seed_o39644));
+#			image.set_pixel(x, y, Color(c.x, c.y, c.z, 1))
+
+
+			# 7
+#			var f : float = 0.5*(sign(brect.b-brect.r-brect.a+brect.g)+1.0);
+#			image.set_pixel(x, y, Color(f, f, f, 1))
+
+			
 	image.unlock()
 	
 	tex.create_from_image(image)
 	texture = tex
 
-#func b2(UV : Vector2):
-#	var ms : float = max(size.x, size.y)
-#	var uv : Vector2 = 0.5+(UV-vec2(0.5))*ms/size.yx
-#	#var is : float = min(size.x, size.y)
-#	vec4 image = preview_2d(uv)
-#	var image_with_background : Vector3 = mix(vec3(mod(floor(uv.x*32.0)+floor(uv.y*32.0), 2.0)), image.xyz, image.a)
-#	uv -= vec2(0.5)
-#	uv = abs(uv)
-#	return Color(image_with_background, step(max(uv.x, uv.y), 0.5)*0.8+0.2)
+func brick_corner_uv(uv : Vector2, bmin : Vector2, bmax : Vector2, mortar : float, corner : float, pseed : float) -> Vector3:
+	var center : Vector2 = 0.5 * (bmin + bmax)
+	var size : Vector2 = bmax - bmin
+	var max_size : float = max(size.x, size.y)
+	var min_size : float = min(size.x, size.y)
+	mortar *= min_size
+	corner *= min_size
+	
+	var r : Vector3 = Vector3()
+	
+	r.x = clamp(((0.5 * size.x - mortar) - abs(uv.x - center.x)) / corner, 0, 1)
+	r.y = clamp(((0.5 * size.y - mortar) - abs(uv.y - center.y)) / corner, 0, 1)
+	r.z = rand(fract(center) + Vector2(pseed, pseed))
+
+	return r
+	
+#	return vec3(clamp((0.5*size-vec2(mortar)-abs(uv-center))/corner, vec2(0.0), vec2(1.0)), rand(fract(center)+vec2(seed)));
+
 
 func brick(uv : Vector2, bmin : Vector2, bmax : Vector2, mortar : float, pround : float, bevel : float) -> Color:
 	var color : float
@@ -93,6 +163,21 @@ func brick_uv(uv : Vector2, bmin : Vector2, bmax : Vector2, pseed : float) -> Ve
 	var y : float = 0.5+ (uv.y - center.y) /max_size
 	
 	return Vector3(x, y, rand(fract(center) + Vector2(pseed, pseed)))
+	
+func bricks_rb(uv : Vector2, count : Vector2, repeat : float, offset : float) -> Color:
+	count *= repeat
+	
+	var x_offset : float = offset * step(0.5, fractf(uv.y * count.y * 0.5))
+	
+	var bmin : Vector2
+	bmin.x = floor(uv.x * count.x - x_offset)
+	bmin.y = floor(uv.y * count.y)
+	
+	bmin.x += x_offset;
+	bmin /= count
+	var bmc : Vector2 = bmin + Vector2(1.0, 1.0) /  count
+
+	return Color(bmin.x, bmin.y, bmc.x, bmc.y)
 
 func fract(v : Vector2) -> Vector2:
 	v.x = v.x - floor(v.x)
@@ -105,6 +190,12 @@ func fractf(f : float) -> float:
 
 func rand(x : Vector2) -> float:
 	return fractf(cos(x.dot(Vector2(13.9898, 8.141))) * 43758.5453);
+	
+func step(edge : float, x : float) -> float:
+	if x < edge:
+		return 0.0
+	else:
+		return 1.0
 
 #common -----
 
