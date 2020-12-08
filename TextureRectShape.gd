@@ -130,9 +130,6 @@ func shape_rays(uv : Vector2, sides : float, size : float, edge : float) -> floa
 	
 	return clamp(min((size - angle) / edge, angle / edge), 0.0, 1.0);
 
-
-#from https://www.geeksforgeeks.org/modulus-two-float-double-numbers/
-#there is probably a better way of doing this
 func modf(x : float, y : float) -> float:
 	return x - y * floor(x / y)
 

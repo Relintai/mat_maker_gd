@@ -289,9 +289,6 @@ func bricks_sb(uv : Vector2, count : Vector2, repeat : float, offset : float) ->
 
 	return Color(corner.x / c.x, corner.y / c.y, (corner.x + size.x) / c.x, (corner.y + size.y) / c.y)
 
-		
-#from https://www.geeksforgeeks.org/modulus-two-float-double-numbers/
-#there is probably a better way of doing this
 func modf(x : float, y : float) -> float:
 	return x - y * floor(x / y)
 
