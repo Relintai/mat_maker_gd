@@ -59,7 +59,7 @@ var p_o28198_persistence = 0.500000000;
 func sinewave(uv : Vector2) -> Color:
 
 	var f : Vector3 = perlin_color(((uv)), Vector2(p_o28198_scale_x, p_o28198_scale_y), int(p_o28198_iterations), p_o28198_persistence, seed_o28198);
-	print(f)
+
 	return Color(f.x, f.y, f.z, 1)
 
 func perlin_color(uv : Vector2, size : Vector2, iterations : int, persistence : float, pseed : int) -> Vector3:
