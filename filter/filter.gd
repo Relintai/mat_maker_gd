@@ -76,27 +76,30 @@ var  p_o102649_value = 1.000000000;
 func adjust_hsv(color : Color) -> Color:
 	var hsv : Vector3 = rgb_to_hsv(Vector3(color.r, color.g, color.b));
 	
-	var v3 : Vector3 = Vector3(fract(hsv.x+p_o102649_hue), clamp(hsv.y*p_o102649_saturation, 0.0, 1.0), clamp(hsv.z*p_o102649_value, 0.0, 1.0))
-	var h : Vector3 = hsv_to_rgb(v3)
+	var x : float = fract(hsv.x + p_o102649_hue)
+	var y : float = clamp(hsv.y * p_o102649_saturation, 0.0, 1.0)
+	var z : float = clamp(hsv.z * p_o102649_value, 0.0, 1.0)
 	
-	return Color(h.x, h.y, h.z, color.a);
+	var h : Vector3 = hsv_to_rgb(Vector3(x, y, z))
 
+	return Color(h.x, h.y, h.z, color.a);
+	
 func rgb_to_hsv(c : Vector3) -> Vector3:
 	var K : Color = Color(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
 	
 	var p : Color 
 	
 	if c.y < c.z:
-		Color(c.z, c.y, K.a, K.b)
+		p = Color(c.z, c.y, K.a, K.b)
 	else:
-		Color(c.y, c.z, K.r, K.g);
+		p = Color(c.y, c.z, K.r, K.g);
 	
 	var q : Color
 	
 	if c.x < p.r:
-		Color(p.r, p.g, p.a, c.x)
+		q = Color(p.r, p.g, p.a, c.x)
 	else:
-		Color(c.x, p.g, p.b, p.r);
+		q = Color(c.x, p.g, p.b, p.r);
 
 	var d : float = q.r - min(q.a, q.g);
 	var e : float = 1.0e-10;
@@ -109,6 +112,7 @@ func hsv_to_rgb(c : Vector3) -> Vector3:
 	var p : Vector3 = absv3(fractv3(Vector3(c.x, c.x, c.x) + Vector3(K.r, K.g, K.b)) * 6.0 - Vector3(K.a, K.a, K.a));
 	
 	return c.z * lerp(Vector3(K.r, K.r, K.r), clampv3(p - Vector3(K.r, K.r, K.r), Vector3(), Vector3(1, 1, 1)), c.y);
+
 
 func shape_circle(uv : Vector2, sides : float, size : float, edge : float) -> float:
 	uv.x = 2.0 * uv.x - 1.0
