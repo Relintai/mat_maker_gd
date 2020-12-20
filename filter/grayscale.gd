@@ -37,13 +37,15 @@ func gen() -> void:
 			var v : Vector2 = Vector2(x / w, y / h)
 
 			var f : float = shape_circle(v, 3, 1.0 * 1.0, 1.0)
+			
+			f = gs_luminosity(Vector3(f, f, f));
+			
 			var c : Color = Color(f, f, f, 1)
 			
 #			c = invert(c)
 #			c = brightness_contrast(c)
 
 			#needs work
-			c = adjust_hsv(c)
 
 			image.set_pixel(x, y, c)
 
@@ -56,62 +58,22 @@ func gen() -> void:
 func invert(color : Color) -> Color:
 	return Color(1.0 - color.r, 1.0 - color.g, 1.0 - color.b, color.a);
 
-var p_o91644_brightness = 0.000000000;
-var p_o91644_contrast = 1.000000000;
 
-func brightness_contrast(color : Color) -> Color:
-	var bv : Vector3 = Vector3(p_o91644_brightness, p_o91644_brightness, p_o91644_brightness)
-	var cvv : Vector3 = Vector3(color.r * p_o91644_contrast, color.g * p_o91644_contrast, color.b * p_o91644_contrast)
-	
-	var cv : Vector3 = cvv + bv + Vector3(0.5, 0.5, 0.5) - (Vector3(p_o91644_contrast, p_o91644_contrast, p_o91644_contrast) * 0.5)
-	
-	var v : Vector3 = clampv3(cv, Vector3(), Vector3(1, 1, 1))
-	
-	return Color(v.x, v.y, v.z, 1);
+func gs_min(c : Vector3) -> float:
+	return min(c.x, min(c.y, c.z));
 
-var p_o102649_hue = 0.000000000;
-var  p_o102649_saturation = 1.000000000;
-var  p_o102649_value = 1.000000000;
+func gs_max(c : Vector3) -> float:
+	return max(c.x, max(c.y, c.z));
 
-func adjust_hsv(color : Color) -> Color:
-	var hsv : Vector3 = rgb_to_hsv(Vector3(color.r, color.g, color.b));
-	
-	var x : float = fract(hsv.x + p_o102649_hue)
-	var y : float = clamp(hsv.y * p_o102649_saturation, 0.0, 1.0)
-	var z : float = clamp(hsv.z * p_o102649_value, 0.0, 1.0)
-	
-	var h : Vector3 = hsv_to_rgb(Vector3(x, y, z))
+func gs_lightness(c : Vector3) -> float:
+	return 0.5*(max(c.x, max(c.y, c.z)) + min(c.x, min(c.y, c.z)));
 
-	return Color(h.x, h.y, h.z, color.a);
-	
-func rgb_to_hsv(c : Vector3) -> Vector3:
-	var K : Color = Color(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-	
-	var p : Color 
-	
-	if c.y < c.z:
-		p = Color(c.z, c.y, K.a, K.b)
-	else:
-		p = Color(c.y, c.z, K.r, K.g);
-	
-	var q : Color
-	
-	if c.x < p.r:
-		q = Color(p.r, p.g, p.a, c.x)
-	else:
-		q = Color(c.x, p.g, p.b, p.r);
+func gs_average(c : Vector3) -> float:
+	return 0.333333333333*(c.x + c.y + c.z);
 
-	var d : float = q.r - min(q.a, q.g);
-	var e : float = 1.0e-10;
-	
-	return Vector3(abs(q.b + (q.a - q.g) / (6.0 * d + e)), d / (q.r + e), q.r);
+func gs_luminosity(c : Vector3) -> float:
+	return 0.21 * c.x + 0.72 * c.y + 0.07 * c.z;
 
-func hsv_to_rgb(c : Vector3) -> Vector3:
-	var K : Color = Color(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-	
-	var p : Vector3 = absv3(fractv3(Vector3(c.x, c.x, c.x) + Vector3(K.r, K.g, K.b)) * 6.0 - Vector3(K.a, K.a, K.a));
-	
-	return c.z * lerp(Vector3(K.r, K.r, K.r), clampv3(p - Vector3(K.r, K.r, K.r), Vector3(), Vector3(1, 1, 1)), c.y);
 
 func shape_circle(uv : Vector2, sides : float, size : float, edge : float) -> float:
 	uv.x = 2.0 * uv.x - 1.0
@@ -297,8 +259,8 @@ func step(edge : float, x : float) -> float:
 #
 #vec3 rgb2hsv(vec3 c) {
 #	vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-#	vec4 p = c.g < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
-#	vec4 q = c.r < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
+#	vec4 p = c.y < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
+#	vec4 q = c.x < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
 #
 #	float d = q.x - min(q.w, q.y);
 #	float e = 1.0e-10;
