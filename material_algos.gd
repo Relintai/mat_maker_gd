@@ -31,6 +31,7 @@ static func box(uv : Vector2, center : Vector3, rad : Vector3, rot : Vector3) ->
 #Color $(name_uv) = brick($uv, $(name_uv)_rect.xy, $(name_uv)_rect.zw, $mortar*$mortar_map($uv), $pround*$pround_map($uv), max(0.001, $bevel*$bevel_map($uv)))
 
 
+
 static func brick(uv : Vector2, bmin : Vector2, bmax : Vector2, mortar : float, pround : float, bevel : float) -> Color:
 	var color : float
 	var size : Vector2 = bmax - bmin
